@@ -16,10 +16,10 @@ def makeArray():
     prevObj = baseObj
     newObjs = None
     
-    #for i in xrange(nCubes-1):   
-    #    prevObj = makeChild(prevObj)
+    for i in xrange(nCubes-1):   
+        prevObj = makeChild(prevObj,i!=0)
 
-    make2Children(baseObj,3,1)
+    #make2Children(baseObj,3,1)
         
 
 def make2Children(parentObj,maxDepth,currDepth):
@@ -36,7 +36,7 @@ def make2Children(parentObj,maxDepth,currDepth):
  
 
 
-def makeChild(parentObj):
+def makeChild(parentObj,makeCon):
      
     # DUPLICATE
     #newCubeName = 'pCube%s' %parentObj[-1]
@@ -47,8 +47,9 @@ def makeChild(parentObj):
     cmds.parent(newObj,parentObj)
     
     # CONNECT XFORM ATTRS
-    for attr in attrs:
-        cmds.expression(s = newObj+'.' +attr+ ' = ' + parentObj+'.' +attr)
+    if makeCon:
+        for attr in attrs:
+            cmds.expression(s = newObj+'.' +attr+ ' = ' + parentObj+'.' +attr)
     
     return newObj
          
