@@ -1,8 +1,11 @@
 import maya.cmds as cmds
 
 """
-Make Binary Geometric Branching fractal "residue"
-Run MakeArray() in Python Command Line in Maya to make work.
+Josh Lopez-Binder May 2015
+Make a geometric branching fractal "residue"
+Run script in Maya and then run MakeArray() in Python Command Line. Move around the 
+two children of the root node. Try scaling them by about 0.5 to get not-self-intersecting
+patterns.
 
 """
 
