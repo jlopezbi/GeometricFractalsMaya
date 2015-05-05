@@ -2,7 +2,6 @@ import maya.cmds as cmds
 
 def makeArray():
     
-    
     axes = ['X', 'Y', 'Z']
     translate = ['translate'+x for x in axes]
     rot = ['rotate'+x for x in axes]
@@ -16,25 +15,28 @@ def makeArray():
     prevObj = baseObj
     newObjs = None
     
-    for i in xrange(nCubes-1):
-             
-        prevObj = makeChild(prevObj)
+    for i in xrange(nCubes-1):   
+        prevObj = makeChild(prevObj,i!=0)
+        #prevObj = makeChild(prevObj,i==0)
+
+
+        
  
 
 
-def makeChild(parentObj):
+def makeChild(parentObj,makeCon):
      
     # DUPLICATE
-    newCubeName = 'pCube%s' %parentObj[-1]
-    newObj = cmds.duplicate(parentObj,n = newCubeName,rr=True,ilf=True)[0]
+    newObj = cmds.duplicate(parentObj,rr=True,ilf=True,rc=True)[0]
     
     
     # PARENT
     cmds.parent(newObj,parentObj)
     
     # CONNECT XFORM ATTRS
-    for attr in attrs:
-        cmds.expression(s = newObj+'.' +attr+ ' = ' + parentObj+'.' +attr)
+    if makeCon:
+        for attr in attrs:
+            cmds.expression(s = newObj+'.' +attr+ ' = ' + parentObj+'.' +attr)
     
     return newObj
          
