@@ -1,5 +1,11 @@
 import maya.cmds as cmds
 
+"""
+Make Binary Geometric Branching fractal "residue"
+Run MakeArray() in Python Command Line in Maya to make work.
+
+"""
+
 def makeArray():
     
     axes = ['X', 'Y', 'Z']
@@ -8,17 +14,14 @@ def makeArray():
     scale = ['scale'+x for x in axes]
     attrs = translate + rot + scale
     
-    nCubes = 10
-    
-    
+        
     baseObj = cmds.polyCube(w=1,d=1,h=1)[0]
     
-
     makeTree(baseObj,baseObj,7,1)
         
 
 def makeTree(parentObj,siblingObj,maxDepth,currDepth):
-    print "Make2Children Called, currDepth=%d" %currDepth
+    
     if currDepth >= maxDepth:
         return
     else:
@@ -26,6 +29,7 @@ def makeTree(parentObj,siblingObj,maxDepth,currDepth):
         [obj1,obj2] = make2Children(parentObj,siblingObj,currDepth!=1) 
         
         currDepth = currDepth+1
+        
         makeTree(obj1,obj2,maxDepth,currDepth)
         makeTree(obj2,obj1,maxDepth,currDepth)
         
@@ -51,20 +55,4 @@ def make2Children(parentObj,siblingObj,makeCon=True,):
           
 
 
-def makeChild(parentObj,bioParent,makeCon=True,):
-     
-    # DUPLICATE
-    newObj = cmds.duplicate(parentObj,rr=True,ilf=True,rc=True)[0]
-    
-    
-    # PARENT
-    cmds.parent(newObj,parentObj)
-    
-    # CONNECT XFORM ATTRS
-    if makeCon:
-        for attr in attrs:
-            cmds.expression(s = newObj+'.' +attr+ ' = ' + bioParent+'.' +attr)
-    
-    print str(newObj)+ " created"
-    return newObj
          
