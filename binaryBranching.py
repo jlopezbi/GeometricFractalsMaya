@@ -2,7 +2,6 @@ import maya.cmds as cmds
 
 def makeArray():
     
-    
     axes = ['X', 'Y', 'Z']
     translate = ['translate'+x for x in axes]
     rot = ['rotate'+x for x in axes]
@@ -13,33 +12,48 @@ def makeArray():
     
     
     baseObj = cmds.polyCube(w=1,d=1,h=1)[0]
-    prevObj = baseObj
-    newObjs = None
     
-    for i in xrange(nCubes-1):   
-        prevObj = makeChild(prevObj,i!=0)
 
-    #make2Children(baseObj,3,1)
+    makeTree(baseObj,baseObj,7,1)
         
 
-def make2Children(parentObj,maxDepth,currDepth):
+def makeTree(parentObj,siblingObj,maxDepth,currDepth):
+    print "Make2Children Called, currDepth=%d" %currDepth
     if currDepth >= maxDepth:
         return
     else:
-        child1 = makeChild(parentObj)
-        child2 = makeChild(parentObj)
+       
+        [obj1,obj2] = make2Children(parentObj,siblingObj,currDepth!=1) 
         
         currDepth = currDepth+1
-        make2Children(child1,maxDepth,currDepth)
-        make2Children(child2,maxDepth,currDepth)
+        makeTree(obj1,obj2,maxDepth,currDepth)
+        makeTree(obj2,obj1,maxDepth,currDepth)
         
- 
-
-
-def makeChild(parentObj,makeCon):
+        
+def make2Children(parentObj,siblingObj,makeCon=True,):
      
     # DUPLICATE
-    #newCubeName = 'pCube%s' %parentObj[-1]
+    newObj1 = cmds.duplicate(parentObj,rr=True,ilf=True,rc=True)[0]
+    newObj2 = cmds.duplicate(newObj1,rr=True,ilf=True,rc=True)[0]
+    
+    
+    # PARENT
+    cmds.parent(newObj1,parentObj)
+    cmds.parent(newObj2,parentObj)
+    
+    # CONNECT XFORM ATTRS
+    if makeCon:
+        for attr in attrs:
+            cmds.expression(s = newObj1+'.' +attr+ ' = ' + parentObj+'.' +attr)
+            cmds.expression(s = newObj2+'.' +attr+ ' = ' + siblingObj+'.' +attr)
+    
+    return [newObj1,newObj2]
+          
+
+
+def makeChild(parentObj,bioParent,makeCon=True,):
+     
+    # DUPLICATE
     newObj = cmds.duplicate(parentObj,rr=True,ilf=True,rc=True)[0]
     
     
@@ -49,7 +63,8 @@ def makeChild(parentObj,makeCon):
     # CONNECT XFORM ATTRS
     if makeCon:
         for attr in attrs:
-            cmds.expression(s = newObj+'.' +attr+ ' = ' + parentObj+'.' +attr)
+            cmds.expression(s = newObj+'.' +attr+ ' = ' + bioParent+'.' +attr)
     
+    print str(newObj)+ " created"
     return newObj
          
