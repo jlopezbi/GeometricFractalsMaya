@@ -9,17 +9,14 @@ patterns.
 
 """
 
+axes = ['X', 'Y', 'Z']
+translate = ['translate'+x for x in axes]
+rot = ['rotate'+x for x in axes]
+scale = ['scale'+x for x in axes]
+attrs = translate + rot + scale
+
 def makeArray():
-    
-    axes = ['X', 'Y', 'Z']
-    translate = ['translate'+x for x in axes]
-    rot = ['rotate'+x for x in axes]
-    scale = ['scale'+x for x in axes]
-    attrs = translate + rot + scale
-    
-        
-    baseObj = cmds.polyCube(w=1,d=1,h=1)[0]
-    
+    baseObj = cmds.polyCube(w=1,d=1,h=1)[0] 
     makeTree(baseObj,baseObj,7,1)
         
 
