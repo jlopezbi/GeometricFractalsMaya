@@ -15,9 +15,9 @@ rot = ['rotate'+x for x in axes]
 scale = ['scale'+x for x in axes]
 attrs = translate + rot + scale
 
-def makeArray():
+def makeArray(nLevels):
     baseObj = cmds.polyCube(w=1,d=1,h=1)[0] 
-    makeTree(baseObj,baseObj,7,1)
+    makeTree(baseObj,baseObj,nLevel,1)
         
 
 def makeTree(parentObj,siblingObj,maxDepth,currDepth):
