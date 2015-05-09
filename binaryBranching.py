@@ -1,12 +1,12 @@
 import maya.cmds as cmds
 
 """
+BINARY BRANCHING
 Josh Lopez-Binder May 2015
-Make a geometric branching fractal with "residue"
-Run script in Maya. Then select base-object and run MakeArray(<nLevels>) in Python Command Line. Move around the 
+Make a geometric branching fractal "residue," with two children from each parent node (binrary tree)
+Run script in Maya and then run MakeArray() in Python Command Line. Move around the 
 two children of the root node. Try scaling them by about 0.5 to get not-self-intersecting
 patterns.
-
 """
 
 axes = ['X', 'Y', 'Z']
@@ -23,11 +23,11 @@ def makeArray(nLevels=7):
     else:
         baseObj = selected[0] #right now hard coded for the first selection  
         #TODO: filter selection for polygons, nurbs, etc.
-          
-    makeTree(baseObj,baseObj,nLevels,1)
+
+    makeTree(baseObj,baseObj,nLevels,0)
         
 
-def makeTree(parentObj,siblingObj,maxDepth,currDepth):      
+def makeTree(parentObj,siblingObj,maxDepth,currDepth):
     
     if currDepth >= maxDepth:
         return
@@ -60,6 +60,3 @@ def make2Children(parentObj,siblingObj,makeCon=True,):
     
     return [newObj1,newObj2]
           
-
-
-         
