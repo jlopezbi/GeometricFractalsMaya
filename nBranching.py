@@ -29,24 +29,21 @@ def makeArray(nBranch=2,nLevels=7):
     makeTree(baseObj,baseObj,nBranch,nLevels,1,finalGen)
     return finalGen
 
-def prune(generation):
-
-    cmds.delete(generation)
-
-def makeTree(parentObj,prevGen,nBranch,maxDepth,currDepth,finalGen):      
+def makeTree(parentObj,parentList,nBranch,maxDepth,currDepth,finalGen):      
     
     if currDepth >= maxDepth:
         finalGen.append(parentObj)
         return
     else:
-        newGen = makeNChildren(nBranch,parentObj,prevGen,currDepth!=1) 
+        newGen = makeNChildren(nBranch,parentObj,parentList,currDepth!=1) 
         currDepth = currDepth+1
         
         for i in xrange(nBranch):
             obj = newGen[i]
             makeTree(obj,newGen,nBranch,maxDepth,currDepth,finalGen)
 
-def makeNChildren(nChildren,parentObj,prevGen,makeCon=True):
+
+def makeNChildren(nChildren,parentObj,parentList,makeCon=True):
 
     objList = []
     prevDup = parentObj
@@ -58,15 +55,39 @@ def makeNChildren(nChildren,parentObj,prevGen,makeCon=True):
         if i==0: cmds.parent(newObj,parentObj)
 
         # CONNECT XFORM ATTRS
-        if nChildren == len(prevGen):
-            connectAttrs(newObj,prevGen[i])
-        elif len(prevGen) <= 1:
+        if nChildren == len(parentList):
+            connectAttrs(newObj,parentList[i])
+        elif len(parentList) <= 1:
             connectAttrs(newObj,parentObj)
 
         objList.append(newObj)
         prevDup = newObj
 
     return objList
+
+
+
+def grow(generation):
+    assert areLeaves(generation), "generation was not the final one!"
+    for obj in generation:
+        pass
+        #makeNChildren(nBranch,obj,getParentList(obj)
+    #THIS IS GOING TO GET MESSY -> NEED TO MAKE OBJECT ORIENTED!
+
+def areLeaves(generation):
+    if not cmds.listRelatives(generation,c=True):
+        return False
+    else:
+        return True
+
+def prune(generation):
+    updatedGen = getParents(generation)
+    cmds.delete(generation)
+    return updatedGen
+
+def getParents(generation):
+    # get parent nodes of each even individual in a generation
+    return cmds.listRelatives(generation, p=True)
 
 def connectAttrs(newObj,oldObj):
     for attr in attrs:
@@ -78,4 +99,3 @@ if __name__ == "__main__":
     cmds.select(all=True)
     cmds.delete()
     gen = makeArray(nBranch=2,nLevels=4)
-        
