@@ -65,7 +65,7 @@ def makeNChildren(nChildren,parentObj,parentList,makeCon=True):
 
 
 
-def grow(generation):
+def grow(generation,nBranch):
     assert areLeaves(generation), "generation was not the final one!"
     updatedGen = []
     for obj in generation:
@@ -120,8 +120,12 @@ if __name__ == "__main__":
     print "Passed getParentGen Test!"
     
     # TEST prune
-    print "Initial final generation: ",
+    print "Initial leaf  generation: ",
     print gen
-    print "Last generation after prune:",
-    print prune(gen)
-
+    print "Leaf generation after prune:",
+    gen = prune(gen)
+    print gen
+    
+    # TEST grow
+    print "Grown Leafs: ",
+    print grow(gen,2)
