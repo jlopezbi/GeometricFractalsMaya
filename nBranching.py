@@ -1,5 +1,4 @@
 import maya.cmds as cmds
-
 """
 Josh Lopez-Binder May 2015
 Make a geometric branching fractal with "residue"
@@ -21,9 +20,9 @@ def makeArray(nBranch=2,nLevels=7):
     
     selected = cmds.ls(sl=1)
     if len(selected) == 0:
-        baseObj = cmds.polyCube(w=1,d=1,h=1)[0] 
+        baseObj = cmds.polyCube(w=1,d=1,h=1)[0]
     else:
-        baseObj = selected[0] #right now hard coded for the first selection  
+        baseObj = selected[0] #right now hard coded for the first selection
         #TODO: filter selection for polygons, nurbs, etc.
     finalGen = []
     makeTree(baseObj,baseObj,nBranch,nLevels,1,finalGen)
@@ -44,7 +43,6 @@ def makeTree(parentObj,parentList,nBranch,maxDepth,currDepth,finalGen):
 
 
 def makeNChildren(nChildren,parentObj,parentList,makeCon=True):
-
     objList = []
     prevDup = parentObj
     for i in xrange(nChildren):
@@ -69,10 +67,20 @@ def makeNChildren(nChildren,parentObj,parentList,makeCon=True):
 
 def grow(generation):
     assert areLeaves(generation), "generation was not the final one!"
+    updatedGen = []
     for obj in generation:
-        pass
-        #makeNChildren(nBranch,obj,getParentList(obj)
-    #THIS IS GOING TO GET MESSY -> NEED TO MAKE OBJECT ORIENTED!
+        updatedGen.extend(makeNChildren(nBranch,obj,getParentGen(obj),makeCon=True))
+    return updatedGen
+
+def getParentGen(obj):
+    grandParent = getGrandParent(obj)
+    assert grandParent!=None
+    return cmds.listRelatives(grandParent,typ="transform",c=True)
+
+def getGrandParent(obj):
+    parent = cmds.listRelatives(obj,p=True)
+    return cmds.listRelatives(parent,p=True)
+
 
 def areLeaves(generation):
     if not cmds.listRelatives(generation,c=True):
@@ -87,15 +95,33 @@ def prune(generation):
 
 def getParents(generation):
     # get parent nodes of each even individual in a generation
-    return cmds.listRelatives(generation, p=True)
+    redundantList =  cmds.listRelatives(generation, p=True)
+    return list(set(redundantList))
+    
 
 def connectAttrs(newObj,oldObj):
     for attr in attrs:
         cmds.expression(s = newObj+'.' +attr+ ' = ' + oldObj+'.' +attr)
-
-
 if __name__ == "__main__":
     # This is for debbuging purposes
     cmds.select(all=True)
     cmds.delete()
     gen = makeArray(nBranch=2,nLevels=4)
+
+    # TEST getGrandParent
+    assert [u'pCube1']== getGrandParent("pCube4")
+    assert getGrandParent("pCube7")== getGrandParent("pCube6")
+    print getGrandParent("pCube2")
+    print "Passed getGrandParent Test!"
+
+    #Test getParentGen 
+    assert [u'pCube4',u'pCube5']== getParentGen("pCube6")
+    #print cmds.listRelatives("pCube2",typ="transform",c=True) 
+    print "Passed getParentGen Test!"
+    
+    # TEST prune
+    print "Initial final generation: ",
+    print gen
+    print "Last generation after prune:",
+    print prune(gen)
+
