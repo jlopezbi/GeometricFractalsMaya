@@ -83,10 +83,10 @@ def getGrandParent(obj):
 
 
 def areLeaves(generation):
-    if not cmds.listRelatives(generation,c=True):
-        return False
-    else:
+    if None == cmds.listRelatives(generation,c=True, typ="transform"):
         return True
+    else:
+        return False
 
 def prune(generation):
     updatedGen = getParents(generation)
@@ -98,34 +98,65 @@ def getParents(generation):
     redundantList =  cmds.listRelatives(generation, p=True)
     return list(set(redundantList))
     
+def getFinalGen(root):
+    # get the final gen from the root
+    def getChildrenRec(obj,finalGen):
+        if areLeaves(obj):
+            finalGen.append(obj)
+            return
+        else:
+            getChildrenRec(obj,finalGen)
+    finalGen = []
+    getChildrenRec(root,finalGen)
+    return finalGen
 
 def connectAttrs(newObj,oldObj):
     for attr in attrs:
         cmds.expression(s = newObj+'.' +attr+ ' = ' + oldObj+'.' +attr)
+
 if __name__ == "__main__":
+
     # This is for debbuging purposes
     cmds.select(all=True)
     cmds.delete()
     gen = makeArray(nBranch=2,nLevels=4)
+    
+    # TEST areLeaves
+    print "TEST areLeaves"
+    print cmds.listRelatives(gen,c=True, typ="transform")
+    assert areLeaves(gen)==True
+    assert areLeaves("pCube1")==False
+    assert areLeaves("pCube2")==False
+    print "passed areLeaves test\n"
 
-    # TEST getGrandParent
+    print "TEST getGrandParent"
     assert [u'pCube1']== getGrandParent("pCube4")
     assert getGrandParent("pCube7")== getGrandParent("pCube6")
     print getGrandParent("pCube2")
-    print "Passed getGrandParent Test!"
+    print "Passed getGrandParent Test!\n"
 
-    #Test getParentGen 
+    print "TEST getParentGen"
     assert [u'pCube4',u'pCube5']== getParentGen("pCube6")
-    #print cmds.listRelatives("pCube2",typ="transform",c=True) 
-    print "Passed getParentGen Test!"
+    print cmds.listRelatives("pCube2",typ="transform",c=True) 
+    print "Passed getParentGen Test!\n"
     
-    # TEST prune
+    print "TEST prune"
     print "Initial leaf  generation: ",
     print gen
     print "Leaf generation after prune:",
     gen = prune(gen)
     print gen
+    print "Finished prune display\n"
     
-    # TEST grow
+    print "TEST grow"
     print "Grown Leafs: ",
     print grow(gen,2)
+    print "Finished grow display\n"
+    
+    print "TEST getFinalGen"
+    assert True == areLeaves("pCube18")
+    print cmds.listRelatives("pCube18",c=True)
+    assert False== areLeaves("pCube1")
+    print "all children of root:",
+    print getFinalGen("pCube1")
+    #print "Passed getFinalGen test!"
