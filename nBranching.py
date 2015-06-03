@@ -65,7 +65,7 @@ def makeNChildren(nChildren,parentObj,parentList,makeCon=True):
 
 
 
-def grow(generation,nBranch):
+def grow(generation,nBranch=2):
     assert areLeaves(generation), "generation was not the final one!"
     updatedGen = []
     for obj in generation:
@@ -119,8 +119,7 @@ def connectAttrs(newObj,oldObj):
     for attr in attrs:
         cmds.expression(s = newObj+'.' +attr+ ' = ' + oldObj+'.' +attr)
 
-if __name__ == "__main__":
-
+def tests():
     # This is for debbuging purposes
     cmds.select(all=True)
     cmds.delete()
@@ -150,7 +149,7 @@ if __name__ == "__main__":
     assert [u'pCube4',u'pCube5']== getParentGen("pCube6")
     print cmds.listRelatives("pCube2",typ="transform",c=True) 
     print "Passed getParentGen Test!\n"
-    
+
     print "TEST prune"
     print "Initial leaf  generation: ",
     print gen
@@ -158,16 +157,20 @@ if __name__ == "__main__":
     gen = prune(gen)
     print gen
     print "Finished prune display\n"
-    
+
     print "TEST grow"
     print "Grown Leafs: ",
     gen = grow(gen,2)
     print gen
     print "Finished grow display\n"
-    
+
     print "TEST getFinalGen"
     assert True == areLeaves("pCube18")
     assert False== areLeaves("pCube1")
     assert set(getFinalGen("pCube2")) == set([u'pCube16',u'pCube17',u'pCube18',u'pCube19'])
     assert set(getFinalGen("pCube1")) == set(gen)
     print "Passed getFinalGen test!\n"
+
+if __name__ == "__main__":
+    #tests()
+    print "loaded functions"
