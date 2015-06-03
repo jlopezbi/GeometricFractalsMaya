@@ -97,15 +97,20 @@ def getParents(generation):
     # get parent nodes of each even individual in a generation
     redundantList =  cmds.listRelatives(generation, p=True)
     return list(set(redundantList))
-    
+
+def getChildren(obj):
+    children = cmds.listRelatives(obj,c=True,typ="transform")
+    return children
+
 def getFinalGen(root):
     # get the final gen from the root
     def getChildrenRec(obj,finalGen):
-        if areLeaves(obj):
+        if areLeaves(obj)==True:
             finalGen.append(obj)
             return
         else:
-            getChildrenRec(obj,finalGen)
+            for child  in getChildren(obj):
+                getChildrenRec(child,finalGen)
     finalGen = []
     getChildrenRec(root,finalGen)
     return finalGen
@@ -120,7 +125,13 @@ if __name__ == "__main__":
     cmds.select(all=True)
     cmds.delete()
     gen = makeArray(nBranch=2,nLevels=4)
-    
+
+    print "\nTEST getChildren"
+    assert ["pCube2","pCube3"] == getChildren("pCube1")
+    for obj in gen:
+        assert None  == getChildren(obj)
+    print "passed getChildren!\n"
+
     # TEST areLeaves
     print "TEST areLeaves"
     print cmds.listRelatives(gen,c=True, typ="transform")
@@ -150,13 +161,13 @@ if __name__ == "__main__":
     
     print "TEST grow"
     print "Grown Leafs: ",
-    print grow(gen,2)
+    gen = grow(gen,2)
+    print gen
     print "Finished grow display\n"
     
     print "TEST getFinalGen"
     assert True == areLeaves("pCube18")
-    print cmds.listRelatives("pCube18",c=True)
     assert False== areLeaves("pCube1")
-    print "all children of root:",
-    print getFinalGen("pCube1")
-    #print "Passed getFinalGen test!"
+    assert set(getFinalGen("pCube2")) == set([u'pCube16',u'pCube17',u'pCube18',u'pCube19'])
+    assert set(getFinalGen("pCube1")) == set(gen)
+    print "Passed getFinalGen test!\n"
