@@ -65,7 +65,9 @@ def makeNChildren(nChildren,parentObj,parentList,makeCon=True):
 
 
 
-def grow(generation,nBranch=2):
+def grow(generation=None,nBranch=3):
+    if generation==None:
+        generation=getFinalGen(cmds.ls(sl=1)[0])
     assert areLeaves(generation), "generation was not the final one!"
     updatedGen = []
     for obj in generation:
@@ -88,7 +90,9 @@ def areLeaves(generation):
     else:
         return False
 
-def prune(generation):
+def prune(generation=None):
+    if generation==None:
+        generation = getFinalGen(cmds.ls(sl=1)[0])
     updatedGen = getParents(generation)
     cmds.delete(generation)
     return updatedGen
@@ -116,7 +120,12 @@ def getFinalGen(root):
     return finalGen
 
 def connectAttrs(newObj,oldObj):
+    #r = str(0.7)
     for attr in attrs:
+        #if attr=='translateX':
+        #    #scale translateX
+        #    cmds.expression(s = newObj+'.' +attr+ ' = ' + r + '*' + oldObj+'.' +attr)
+        #else:
         cmds.expression(s = newObj+'.' +attr+ ' = ' + oldObj+'.' +attr)
 
 def tests():
