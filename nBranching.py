@@ -17,7 +17,7 @@ finalGen = []
 
 
 def makeArray(nBranch=2,nLevels=7):
-    
+    """Run this command to make branching structure """ 
     selected = cmds.ls(sl=1)
     if len(selected) == 0:
         baseObj = cmds.polyCube(w=1,d=1,h=1)[0]
@@ -66,6 +66,8 @@ def makeNChildren(nChildren,parentObj,parentList,makeCon=True):
 
 
 def grow(generation=None,nBranch=3):
+    """run the function with the root node selected to add another level 
+    to the structure"""
     if generation==None:
         generation=getFinalGen(cmds.ls(sl=1)[0])
     assert areLeaves(generation), "generation was not the final one!"
@@ -91,6 +93,8 @@ def areLeaves(generation):
         return False
 
 def prune(generation=None):
+    """Run this function with the root node selected to remove a level from
+    from the branching structure"""
     if generation==None:
         generation = getFinalGen(cmds.ls(sl=1)[0])
     updatedGen = getParents(generation)
